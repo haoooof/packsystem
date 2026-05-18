@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易外卖业务系统</title>
+    <style>
+        :root {
+            --primary-color: #ff6600;
+            --secondary-color: #ff8533;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #f5f5f5;
+            --white: #fff;
+            --border-color: #ddd;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid var(--white);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--white);
+            color: var(--primary-color);
+        }
+
+        /* 视图切换 */
+        .view {
+            display: none;
+            padding: 30px 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* 首页样式 */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 60px 0;
+            text-align: center;
+            border-radius: var(--radius);
+            margin-bottom: 40px;
+        }
+
+        .hero-title {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .role-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+            border: 3px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(255,102,0,0.2);
+        }
+
+        .role-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .role-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .role-card p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .features {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--radius);
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .features h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-item {
+            padding: 12px 20px;
+            background: var(--bg-color);
+            border-radius: 20px;
+            font-size: 15px;
+        }
+
+        .flow-demo {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .flow-demo h3 {
+            margin-bottom: 30px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            min-width: 100px;
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        /* 用户端样式 */
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .view-header h2 {
+            font-size: 28px;
+        }
+
+        .user-info, .merchant-info, .rider-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            flex-wrap: wrap;
+        }
+
+        .rider-status {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .user-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .section h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        .merchant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .merchant-card {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .merchant-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .merchant-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .merchant-category {
+            color: var(--primary-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .merchant-address {
+            color: var(--text-light);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .merchant-phone {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        /* 购物车样式 */
+        .cart-sidebar {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .cart-sidebar h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        .cart-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .cart-item-qty {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .cart-footer {
+            border-top: 2px solid var(--bg-color);
+            padding-top: 20px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .cart-total span:last-child {
+            color: var(--primary-color);
+        }
+
+        /* 订单列表样式 */
+        .orders-list, .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-card, .task-card {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .order-header, .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-pending { background: #fff3e0; color: #ff9800; }
+        .status-processing { background: #e3f2fd; color: #2196f3; }
+        .status-delivering { background: #e8f5e9; color: #4caf50; }
+        .status-completed { background: #f5f5f5; color: #9e9e9e; }
+
+        .order-items {
+            margin: 12px 0;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-info {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .order-money {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: var(--white);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 6px 15px;
+            font-size: 13px;
+        }
+
+        /* 统计卡片 */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-num {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--text-light);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        /* 商品列表 */
+        .goods-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .goods-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: var(--radius);
+        }
+
+        .goods-info h4 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .goods-info p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .goods-price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* 订单摘要 */
+        .order-summary {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .order-summary h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .checkout-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .checkout-total span:last-child {
+            color: var(--primary-color);
+        }
+
+        /* 订单详情时间线 */
+        .order-timeline {
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--border-color);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .timeline-dot.active {
+            background: var(--primary-color);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .timeline-time {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* 通知提示 */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--white);
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 3000;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 底部样式 */
+        .footer {
+            background: #333;
+            color: #999;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .footer p {
+            font-size: 14px;
+        }
+
+        /* 购物车切换按钮 */
+        .cart-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            font-size: 28px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255,102,0,0.4);
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .cart-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .user-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: fixed;
+                top: 0;
+                right: -350px;
+                width: 350px;
+                height: 100vh;
+                z-index: 1500;
+                border-radius: 0;
+                transition: right 0.3s;
+                padding-top: 80px;
+            }
+
+            .cart-sidebar.active {
+                right: 0;
+            }
+
+            .cart-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .view-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-info, .merchant-info, .rider-info {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            .merchant-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: calc(100vh - 20px);
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="container header-content">
+            <h1 class="logo">🍔 外卖系统</h1>
+            <nav class="nav">
+                <button class="nav-btn active" data-view="home" onclick="switchView('home')">🏠 首页</button>
+                <button class="nav-btn" data-view="user" onclick="switchView('user')">👤 用户端</button>
+                <button class="nav-btn" data-view="merchant" onclick="switchView('merchant')">🏪 商家端</button>
+                <button class="nav-btn" data-view="rider" onclick="switchView('rider')">🚴 骑手端</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 首页视图 -->
+    <section id="view-home" class="view active">
+        <div class="hero">
+            <div class="container">
+                <h2 class="hero-title">欢迎使用简易外卖业务系统</h2>
+                <p class="hero-subtitle">模拟完整的外卖业务流程：下单 → 接单 → 出餐 → 配送 → 送达</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="role-cards">
+                <div class="role-card" onclick="switchView('user')">
+                    <div class="role-icon">👤</div>
+                    <h3>用户端</h3>
+                    <p>浏览商家 · 下单购物 · 追踪订单</p>
+                </div>
+                <div class="role-card" onclick="switchView('merchant')">
+                    <div class="role-icon">🏪</div>
+                    <h3>商家端</h3>
+                    <p>接收订单 · 确认接单 · 完成出餐</p>
+                </div>
+                <div class="role-card" onclick="switchView('rider')">
+                    <div class="role-icon">🚴</div>
+                    <h3>骑手端</h3>
+                    <p>查看任务 · 取餐配送 · 确认送达</p>
+                </div>
+            </div>
+
+            <div class="features">
+                <h3>🎯 系统功能特性</h3>
+                <div class="feature-list">
+                    <div class="feature-item">✅ 三大角色完整模拟</div>
+                    <div class="feature-item">✅ 订单全流程状态追踪</div>
+                    <div class="feature-item">✅ 实时数据交互与更新</div>
+                    <div class="feature-item">✅ 响应式设计，适配手机和电脑</div>
+                    <div class="feature-item">✅ 本地数据持久化存储</div>
+                    <div class="feature-item">✅ 无需后端，纯前端实现</div>
+                </div>
+            </div>
+
+            <div class="flow-demo">
+                <h3>📋 订单流程说明</h3>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text">用户下单</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text">商家接单</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text">商家出餐</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text">骑手取餐</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span class="step-num">5</span>
+                        <span class="step-text">配送送达</span>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <span class="step-num">6</span>
+                        <span class="step-text">订单完成</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 用户端视图 -->
+    <section id="view-user" class="view">
+        <div class="container">
+            <div class="view-header">
+                <h2>👤 用户端</h2>
+                <div class="user-info">
+                    <span>当前用户：张三</span>
+                    <span>📞 138****8000</span>
+                </div>
+            </div>
+
+            <div class="user-layout">
+                <div class="main-content">
+                    <div class="section">
+                        <h3>🏪 商家列表</h3>
+                        <div id="merchant-list" class="merchant-grid"></div>
+                    </div>
+
+                    <div class="section">
+                        <h3>📦 我的订单</h3>
+                        <div id="user-orders" class="orders-list"></div>
+                    </div>
+                </div>
+
+                <aside id="cart-sidebar" class="cart-sidebar">
+                    <h3>🛒 购物车</h3>
+                    <div id="cart-items" class="cart-items"></div>
+                    <div class="cart-footer">
+                        <div class="cart-total">
+                            <span>总计：</span>
+                            <span id="cart-total">¥0.00</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="showCheckoutModal()">去结算</button>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <button id="cart-toggle" class="cart-toggle" onclick="toggleCart()">🛒</button>
+    </section>
+
+    <!-- 商家端视图 -->
+    <section id="view-merchant" class="view">
+        <div class="container">
+            <div class="view-header">
+                <h2>🏪 商家端</h2>
+                <div class="merchant-info">
+                    <span>当前商家：肯德基</span>
+                    <span>📍 北京市朝阳区</span>
+                </div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-num" id="merchant-pending-count">0</div>
+                    <div class="stat-label">待处理订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="merchant-today-count">0</div>
+                    <div class="stat-label">今日订单</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="merchant-today-money">¥0</div>
+                    <div class="stat-label">今日收入</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📋 待处理订单</h3>
+                <div id="merchant-orders" class="orders-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 骑手端视图 -->
+    <section id="view-rider" class="view">
+        <div class="container">
+            <div class="view-header">
+                <h2>🚴 骑手端</h2>
+                <div class="rider-info">
+                    <span>当前骑手：李四</span>
+                    <span>📞 139****9000</span>
+                    <span class="rider-status">状态：空闲</span>
+                </div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-num" id="rider-pending-count">0</div>
+                    <div class="stat-label">待取餐</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="rider-delivering-count">0</div>
+                    <div class="stat-label">配送中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="rider-today-count">0</div>
+                    <div class="stat-label">今日完成</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📦 配送任务</h3>
+                <div id="rider-tasks" class="tasks-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 模态框：商家商品 -->
+    <div id="modal-merchant-goods" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-merchant-name">商家商品</h3>
+                <button class="modal-close" onclick="closeModal('modal-merchant-goods')">&times;</button>
+            </div>
+            <div id="modal-goods-list" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- 模态框：下单确认 -->
+    <div id="modal-checkout" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认订单</h3>
+                <button class="modal-close" onclick="closeModal('modal-checkout')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>配送地址</label>
+                    <input type="text" id="checkout-address" class="form-control" placeholder="请输入配送地址" value="北京市朝阳区XX路XX号">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="checkout-remark" class="form-control" rows="3" placeholder="请输入备注（如：不要辣）"></textarea>
+                </div>
+                <div class="order-summary">
+                    <h4>订单摘要</h4>
+                    <div id="checkout-summary"></div>
+                    <div class="checkout-total">
+                        <span>应付金额：</span>
+                        <span id="checkout-total">¥0.00</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="submitOrder()">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：订单详情 -->
+    <div id="modal-order-detail" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>订单详情</h3>
+                <button class="modal-close" onclick="closeModal('modal-order-detail')">&times;</button>
+            </div>
+            <div id="modal-order-content" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="notification"></div>
+
+    <!-- 底部信息 -->
+    <footer class="footer">
+        <div class="container">
+            <p>简易外卖业务系统 - 纯前端演示项目 | 数据存储在本地浏览器</p>
+        </div>
+    </footer>
+
+    <script>
+        // 数据存储键名
+        const STORAGE_KEYS = {
+            ORDERS: 'takeout_orders',
+            CART: 'takeout_cart'
+        };
+
+        // 订单状态常量
+        const ORDER_STATES = {
+            PENDING_PAYMENT: '待支付',
+            PENDING_MERCHANT_ACCEPT: '待商家接单',
+            MERCHANT_ACCEPTED: '商家已接单',
+            MERCHANT_FINISHED: '商家已出餐',
+            RIDER_PICKED_UP: '骑手已取餐',
+            DELIVERING: '配送中',
+            DELIVERED: '已送达',
+            COMPLETED: '已完成'
+        };
+
+        // 用户数据
+        const currentUser = {
+            user_id: 'U001',
+            user_name: '张三',
+            phone: '138****8000',
+            address: '北京市朝阳区XX路XX号'
+        };
+
+        // 骑手数据
+        const riders = [
+            {
+                rider_id: 'R001',
+                rider_name: '李四',
+                phone: '139****9000',
+                state: '空闲'
+            }
+        ];
+
+        // 商家数据
+        const merchants = [
+            {
+                merchant_id: 'M001',
+                merchant_name: '肯德基',
+                address: '北京市朝阳区XX街XX号',
+                phone: '010-12345678',
+                category: '快餐',
+                goods: [
+                    { goods_id: 'G001', goods_name: '香辣鸡腿堡', price: 18.50, description: '香辣可口，份量十足' },
+                    { goods_id: 'G002', goods_name: '薯条（中）', price: 12.00, description: '金黄酥脆' },
+                    { goods_id: 'G003', goods_name: '可乐（中）', price: 8.00, description: '冰爽解渴' },
+                    { goods_id: 'G004', goods_name: '鸡块（6块）', price: 16.00, description: '鲜嫩多汁' },
+                    { goods_id: 'G005', goods_name: '蛋挞', price: 6.50, description: '酥香甜糯' }
+                ]
+            },
+            {
+                merchant_id: 'M002',
+                merchant_name: '麦当劳',
+                address: '北京市海淀区XX路XX号',
+                phone: '010-87654321',
+                category: '快餐',
+                goods: [
+                    { goods_id: 'G006', goods_name: '巨无霸', price: 22.50, description: '经典双层牛肉堡' },
+                    { goods_id: 'G007', goods_name: '麦乐鸡（5块）', price: 14.00, description: '外酥里嫩' },
+                    { goods_id: 'G008', goods_name: '薯条（大）', price: 15.00, description: '超大容量' },
+                    { goods_id: 'G009', goods_name: '可口可乐（大）', price: 9.00, description: '正宗可口' }
+                ]
+            },
+            {
+                merchant_id: 'M003',
+                merchant_name: '沙县小吃',
+                address: '北京市东城区XX巷XX号',
+                phone: '010-11223344',
+                category: '小吃',
+                goods: [
+                    { goods_id: 'G010', goods_name: '拌面', price: 8.00, description: '香滑可口' },
+                    { goods_id: 'G011', goods_name: '馄饨', price: 10.00, description: '皮薄馅大' },
+                    { goods_id: 'G012', goods_name: '蒸饺', price: 12.00, description: '皮薄汁多' },
+                    { goods_id: 'G013', goods_name: '乌鸡汤', price: 25.00, description: '营养滋补' }
+                ]
+            }
+        ];
+
+        // 全局变量
+        let orders = [];
+        let cart = [];
+
+        // 初始化
+        function init() {
+            loadData();
+            renderMerchantList();
+            renderUserOrders();
+            renderCart();
+            updateMerchantStats();
+            updateRiderStats();
+            renderRiderTasks();
+        }
+
+        // 加载数据
+        function loadData() {
+            const storedOrders = localStorage.getItem(STORAGE_KEYS.ORDERS);
+            if (storedOrders) {
+                orders = JSON.parse(storedOrders);
+            }
+
+            const storedCart = localStorage.getItem(STORAGE_KEYS.CART);
+            if (storedCart) {
+                cart = JSON.parse(storedCart);
+            }
+        }
+
+        // 保存数据
+        function saveData() {
+            localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+            localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
+        }
+
+        // 切换视图
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+
+            if (viewName === 'user') {
+                renderMerchantList();
+                renderUserOrders();
+                renderCart();
+            } else if (viewName === 'merchant') {
+                renderMerchantOrders();
+                updateMerchantStats();
+            } else if (viewName === 'rider') {
+                renderRiderTasks();
+                updateRiderStats();
+            }
+
+            closeCart();
+        }
+
+        // 渲染商家列表
+        function renderMerchantList() {
+            const container = document.getElementById('merchant-list');
+            container.innerHTML = merchants.map(merchant => `
+                <div class="merchant-card" onclick="showMerchantGoods('${merchant.merchant_id}')">
+                    <div class="merchant-name">${merchant.merchant_name}</div>
+                    <div class="merchant-category">${merchant.category}</div>
+                    <div class="merchant-address">📍 ${merchant.address}</div>
+                    <div class="merchant-phone">📞 ${merchant.phone}</div>
+                </div>
+            `).join('');
+        }
+
+        // 显示商家商品
+        function showMerchantGoods(merchantId) {
+            const merchant = merchants.find(m => m.merchant_id === merchantId);
+            if (!merchant) return;
+
+            document.getElementById('modal-merchant-name').textContent = `${merchant.merchant_name} - 商品列表`;
+            
+            const goodsList = document.getElementById('modal-goods-list');
+            goodsList.innerHTML = `
+                <div class="goods-list">
+                    ${merchant.goods.map(good => `
+                        <div class="goods-item">
+                            <div class="goods-info">
+                                <h4>${good.goods_name}</h4>
+                                <p>${good.description}</p>
+                                <div class="goods-price">¥${good.price.toFixed(2)}</div>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="addToCart('${merchant.merchant_id}', '${good.goods_id}')">
+                                加入购物车
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            openModal('modal-merchant-goods');
+        }
+
+        // 加入购物车
+        function addToCart(merchantId, goodsId) {
+            const merchant = merchants.find(m => m.merchant_id === merchantId);
+            if (!merchant) return;
+
+            const good = merchant.goods.find(g => g.goods_id === goodsId);
+            if (!good) return;
+
+            const existingItem = cart.find(item => item.goods_id === goodsId);
+            if (existingItem) {
+                existingItem.goods_num += 1;
+            } else {
+                cart.push({
+                    merchant_id: merchantId,
+                    merchant_name: merchant.merchant_name,
+                    goods_id: goodsId,
+                    goods_name: good.goods_name,
+                    goods_price: good.price,
+                    goods_num: 1
+                });
+            }
+
+            saveData();
+            renderCart();
+            showNotification('已添加到购物车');
+            closeModal('modal-merchant-goods');
+        }
+
+        // 渲染购物车
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛒</div><p>购物车是空的</p></div>';
+                cartTotal.textContent = '¥0.00';
+                return;
+            }
+
+            cartItems.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.goods_name}</div>
+                        <div class="cart-item-price">¥${item.goods_price.toFixed(2)}</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="qty-btn" onclick="updateCartQty(${index}, -1)">-</button>
+                        <span class="cart-item-qty">${item.goods_num}</span>
+                        <button class="qty-btn" onclick="updateCartQty(${index}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.goods_price * item.goods_num, 0);
+            cartTotal.textContent = `¥${total.toFixed(2)}`;
+        }
+
+        // 更新购物车数量
+        function updateCartQty(index, delta) {
+            cart[index].goods_num += delta;
+            if (cart[index].goods_num <= 0) {
+                cart.splice(index, 1);
+            }
+            saveData();
+            renderCart();
+        }
+
+        // 显示结算弹窗
+        function showCheckoutModal() {
+            if (cart.length === 0) {
+                showNotification('购物车是空的');
+                return;
+            }
+
+            const summary = document.getElementById('checkout-summary');
+            summary.innerHTML = cart.map(item => `
+                <div class="summary-item">
+                    <span>${item.goods_name} × ${item.goods_num}</span>
+                    <span>¥${(item.goods_price * item.goods_num).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.goods_price * item.goods_num, 0);
+            document.getElementById('checkout-total').textContent = `¥${total.toFixed(2)}`;
+
+            openModal('modal-checkout');
+        }
+
+        // 提交订单
+        function submitOrder() {
+            const address = document.getElementById('checkout-address').value;
+            const remark = document.getElementById('checkout-remark').value;
+
+            if (!address) {
+                showNotification('请输入配送地址');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + item.goods_price * item.goods_num, 0);
+            
+            const order = {
+                order_id: generateOrderId(),
+                user_id: currentUser.user_id,
+                user_name: currentUser.user_name,
+                user_phone: currentUser.phone,
+                merchant_id: cart[0].merchant_id,
+                merchant_name: cart[0].merchant_name,
+                items: cart.map(item => ({
+                    goods_id: item.goods_id,
+                    goods_name: item.goods_name,
+                    goods_price: item.goods_price,
+                    goods_num: item.goods_num
+                })),
+                money: total,
+                order_time: new Date().toLocaleString('zh-CN'),
+                pay_state: '已支付',
+                state: ORDER_STATES.PENDING_MERCHANT_ACCEPT,
+                address: address,
+                remark: remark,
+                rider_id: null,
+                rider_name: null
+            };
+
+            orders.push(order);
+            saveData();
+
+            cart = [];
+            saveData();
+
+            closeModal('modal-checkout');
+            renderCart();
+            renderUserOrders();
+
+            showNotification('订单提交成功！');
+        }
+
+        // 生成订单ID
+        function generateOrderId() {
+            const date = new Date();
+            const dateStr = date.getFullYear().toString() + 
+                           (date.getMonth() + 1).toString().padStart(2, '0') + 
+                           date.getDate().toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `ORD${dateStr}${random}`;
+        }
+
+        // 渲染用户订单
+        function renderUserOrders() {
+            const container = document.getElementById('user-orders');
+            const userOrders = orders.filter(o => o.user_id === currentUser.user_id);
+
+            if (userOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><p>暂无订单</p></div>';
+                return;
+            }
+
+            container.innerHTML = userOrders.reverse().map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="order-id">订单号：${order.order_id}</span>
+                        <span class="order-status ${getStatusClass(order.state)}">${order.state}</span>
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `${item.goods_name} × ${item.goods_num}`).join('、')}
+                    </div>
+                    <div class="order-footer">
+                        <div class="order-info">
+                            <div>商家：${order.merchant_name}</div>
+                            <div>地址：${order.address}</div>
+                            <div>时间：${order.order_time}</div>
+                        </div>
+                        <div>
+                            <div class="order-money">¥${order.money.toFixed(2)}</div>
+                            <button class="btn btn-sm btn-primary" onclick="showOrderDetail('${order.order_id}')" style="margin-top: 8px;">
+                                查看详情
+                            </button>
+                            ${order.state === ORDER_STATES.DELIVERED ? `
+                                <button class="btn btn-sm btn-success" onclick="confirmComplete('${order.order_id}')" style="margin-top: 8px;">
+                                    确认完成
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 确认完成订单
+        function confirmComplete(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.state = ORDER_STATES.COMPLETED;
+                saveData();
+                renderUserOrders();
+                showNotification('订单已完成！');
+            }
+        }
+
+        // 获取状态样式类
+        function getStatusClass(status) {
+            switch (status) {
+                case ORDER_STATES.PENDING_PAYMENT:
+                case ORDER_STATES.PENDING_MERCHANT_ACCEPT:
+                    return 'status-pending';
+                case ORDER_STATES.MERCHANT_ACCEPTED:
+                case ORDER_STATES.MERCHANT_FINISHED:
+                case ORDER_STATES.RIDER_PICKED_UP:
+                case ORDER_STATES.DELIVERING:
+                    return 'status-processing';
+                case ORDER_STATES.DELIVERED:
+                    return 'status-delivering';
+                case ORDER_STATES.COMPLETED:
+                    return 'status-completed';
+                default:
+                    return '';
+            }
+        }
+
+        // 显示订单详情
+        function showOrderDetail(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (!order) return;
+
+            const content = document.getElementById('modal-order-content');
+            content.innerHTML = `
+                <div class="order-summary">
+                    <h4>订单信息</h4>
+                    <div class="summary-item">
+                        <span>订单编号</span>
+                        <span>${order.order_id}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>下单时间</span>
+                        <span>${order.order_time}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>支付状态</span>
+                        <span>${order.pay_state}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>订单状态</span>
+                        <span class="order-status ${getStatusClass(order.state)}">${order.state}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>配送地址</span>
+                        <span>${order.address}</span>
+                    </div>
+                    ${order.remark ? `
+                        <div class="summary-item">
+                            <span>备注</span>
+                            <span>${order.remark}</span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="order-summary">
+                    <h4>商家信息</h4>
+                    <div class="summary-item">
+                        <span>商家名称</span>
+                        <span>${order.merchant_name}</span>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+                    <h4>商品明细</h4>
+                    ${order.items.map(item => `
+                        <div class="summary-item">
+                            <span>${item.goods_name} × ${item.goods_num}</span>
+                            <span>¥${(item.goods_price * item.goods_num).toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                    <div class="checkout-total">
+                        <span>订单总额</span>
+                        <span>¥${order.money.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                ${order.rider_name ? `
+                    <div class="order-summary">
+                        <h4>骑手信息</h4>
+                        <div class="summary-item">
+                            <span>骑手姓名</span>
+                            <span>${order.rider_name}</span>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="order-timeline">
+                    <h4>订单进度</h4>
+                    <div class="timeline-item">
+                        <div class="timeline-dot active"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">下单成功</div>
+                            <div class="timeline-time">${order.order_time}</div>
+                        </div>
+                    </div>
+                    ${getTimelineItems(order)}
+                </div>
+            `;
+
+            openModal('modal-order-detail');
+        }
+
+        // 获取时间线项目
+        function getTimelineItems(order) {
+            let items = [];
+            
+            if (order.state !== ORDER_STATES.PENDING_PAYMENT && order.state !== ORDER_STATES.PENDING_MERCHANT_ACCEPT) {
+                items.push(`
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${['商家已接单', '商家已出餐', '骑手已取餐', '配送中', '已送达', '已完成'].includes(order.state) ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">商家已接单</div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (['商家已出餐', '骑手已取餐', '配送中', '已送达', '已完成'].includes(order.state)) {
+                items.push(`
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${['骑手已取餐', '配送中', '已送达', '已完成'].includes(order.state) ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">商家已出餐</div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (['骑手已取餐', '配送中', '已送达', '已完成'].includes(order.state)) {
+                items.push(`
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${['配送中', '已送达', '已完成'].includes(order.state) ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">骑手已取餐</div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (['配送中', '已送达', '已完成'].includes(order.state)) {
+                items.push(`
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${['已送达', '已完成'].includes(order.state) ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">配送中</div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (['已送达', '已完成'].includes(order.state)) {
+                items.push(`
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${order.state === '已完成' ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">已送达</div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            return items.join('');
+        }
+
+        // 渲染商家订单
+        function renderMerchantOrders() {
+            const container = document.getElementById('merchant-orders');
+            const merchantOrders = orders.filter(o => 
+                ['待商家接单', '商家已接单', '商家已出餐'].includes(o.state)
+            );
+
+            if (merchantOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>暂无待处理订单</p></div>';
+                return;
+            }
+
+            container.innerHTML = merchantOrders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="order-id">订单号：${order.order_id}</span>
+                        <span class="order-status ${getStatusClass(order.state)}">${order.state}</span>
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `${item.goods_name} × ${item.goods_num}`).join('、')}
+                    </div>
+                    <div class="order-footer">
+                        <div class="order-info">
+                            <div>用户：${order.user_name}</div>
+                            <div>电话：${order.user_phone}</div>
+                            <div>地址：${order.address}</div>
+                            ${order.remark ? `<div>备注：${order.remark}</div>` : ''}
+                        </div>
+                        <div>
+                            <div class="order-money">¥${order.money.toFixed(2)}</div>
+                            ${order.state === '待商家接单' ? `
+                                <button class="btn btn-sm btn-primary" onclick="merchantAccept('${order.order_id}')" style="margin-top: 8px;">
+                                    接单
+                                </button>
+                            ` : ''}
+                            ${order.state === '商家已接单' ? `
+                                <button class="btn btn-sm btn-success" onclick="merchantFinish('${order.order_id}')" style="margin-top: 8px;">
+                                    完成出餐
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 商家接单
+        function merchantAccept(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.state = ORDER_STATES.MERCHANT_ACCEPTED;
+                saveData();
+                renderMerchantOrders();
+                updateMerchantStats();
+                showNotification('已接单！');
+            }
+        }
+
+        // 商家完成出餐
+        function merchantFinish(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.state = ORDER_STATES.MERCHANT_FINISHED;
+                
+                const availableRider = riders.find(r => r.state === '空闲');
+                if (availableRider) {
+                    order.rider_id = availableRider.rider_id;
+                    order.rider_name = availableRider.rider_name;
+                    availableRider.state = '配送中';
+                    order.state = ORDER_STATES.RIDER_PICKED_UP;
+                }
+
+                saveData();
+                renderMerchantOrders();
+                updateMerchantStats();
+                showNotification('已出餐，等待骑手取餐！');
+            }
+        }
+
+        // 更新商家统计
+        function updateMerchantStats() {
+            const today = new Date().toLocaleDateString('zh-CN');
+            const todayOrders = orders.filter(o => 
+                o.order_time.includes(today) && 
+                ['商家已接单', '商家已出餐', '骑手已取餐', '配送中', '已送达', '已完成'].includes(o.state)
+            );
+            const pendingOrders = orders.filter(o => 
+                ['待商家接单', '商家已接单', '商家已出餐'].includes(o.state)
+            );
+            const todayMoney = todayOrders.reduce((sum, o) => sum + o.money, 0);
+
+            document.getElementById('merchant-pending-count').textContent = pendingOrders.length;
+            document.getElementById('merchant-today-count').textContent = todayOrders.length;
+            document.getElementById('merchant-today-money').textContent = `¥${todayMoney.toFixed(0)}`;
+        }
+
+        // 渲染骑手任务
+        function renderRiderTasks() {
+            const container = document.getElementById('rider-tasks');
+            const riderOrders = orders.filter(o => 
+                ['骑手已取餐', '配送中', '已送达'].includes(o.state)
+            );
+
+            if (riderOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚴</div><p>暂无配送任务</p></div>';
+                return;
+            }
+
+            container.innerHTML = riderOrders.map(order => `
+                <div class="task-card">
+                    <div class="task-header">
+                        <span class="order-id">订单号：${order.order_id}</span>
+                        <span class="order-status ${getStatusClass(order.state)}">${order.state}</span>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>取餐地址：</strong>${merchants.find(m => m.merchant_id === order.merchant_id)?.address || '未知地址'}
+                        </div>
+                        <div>
+                            <strong>配送地址：</strong>${order.address}
+                        </div>
+                    </div>
+                    <div class="order-footer">
+                        <div class="order-info">
+                            <div>商家：${order.merchant_name}</div>
+                            <div>用户：${order.user_name}</div>
+                        </div>
+                        <div>
+                            <div class="order-money">¥${order.money.toFixed(2)}</div>
+                            ${order.state === '骑手已取餐' ? `
+                                <button class="btn btn-sm btn-warning" onclick="riderPickup('${order.order_id}')" style="margin-top: 8px;">
+                                    开始配送
+                                </button>
+                            ` : ''}
+                            ${order.state === '配送中' ? `
+                                <button class="btn btn-sm btn-success" onclick="riderDeliver('${order.order_id}')" style="margin-top: 8px;">
+                                    确认送达
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 骑手取餐
+        function riderPickup(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.state = ORDER_STATES.DELIVERING;
+                saveData();
+                renderRiderTasks();
+                updateRiderStats();
+                showNotification('配送开始！');
+            }
+        }
+
+        // 骑手送达
+        function riderDeliver(orderId) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.state = ORDER_STATES.DELIVERED;
+                
+                const rider = riders.find(r => r.rider_id === order.rider_id);
+                if (rider) {
+                    rider.state = '空闲';
+                }
+
+                saveData();
+                renderRiderTasks();
+                updateRiderStats();
+                showNotification('已送达，等待用户确认！');
+            }
+        }
+
+        // 更新骑手统计
+        function updateRiderStats() {
+            const today = new Date().toLocaleDateString('zh-CN');
+            const pendingOrders = orders.filter(o => o.state === '骑手已取餐');
+            const deliveringOrders = orders.filter(o => o.state === '配送中');
+            const todayCompleted = orders.filter(o => 
+                o.order_time.includes(today) && 
+                o.state === '已完成'
+            );
+
+            document.getElementById('rider-pending-count').textContent = pendingOrders.length;
+            document.getElementById('rider-delivering-count').textContent = deliveringOrders.length;
+            document.getElementById('rider-today-count').textContent = todayCompleted.length;
+        }
+
+        // 切换购物车显示
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // 关闭购物车
+        function closeCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.remove('active');
+        }
+
+        // 打开模态框
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
